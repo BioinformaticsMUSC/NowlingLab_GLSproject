@@ -48,7 +48,7 @@ meta <- read.delim("./outs/counts/meta_il.txt")
 rownames(meta) <- meta$Sample_ID
 meta$Sample_ID <- NULL
 
-exp <- exp[, colnames(exp) %in% rownames(pd)]
+exp <- exp[, colnames(exp) %in% rownames(meta)]
 cpm <- future_apply(exp, 2, function(x) x/sum(as.numeric(x)) * 10^6)
 
 
@@ -228,6 +228,13 @@ save(posthoc_eff,posthoc_pval,sign_posthoc_pval,sign_posthoc_eff,  file = "./out
 
 
 save(p_regressed, file = "./outs/dge/p_regressed.RData")
+
+dir.create("./outs/dge/IL24_CTRL24")
+dir.create("./outs/dge/IL48_CTRL48")
+dir.create("./outs/dge/IL72_CTRL72")
+dir.create("./outs/dge/ILelig24_CTRL24")
+dir.create("./outs/dge/ILelig48_CTRL48")
+dir.create("./outs/dge/ILelig72_CTRL72")
 
 IL24_CTRL24 <- data.frame(Gene = rownames(posthoc_pval), logFC = posthoc_eff$il1b_time24_untreated_time24, FDR = posthoc_pval$il1b_time24_untreated_time24)
 IL48_CTRL48 <- data.frame(Gene = rownames(posthoc_pval), logFC = posthoc_eff$il1b_time48_untreated_time48, FDR = posthoc_pval$il1b_time48_untreated_time48)
@@ -1110,7 +1117,7 @@ IL24_CTRL24_Sign_df$p_val<-sign_posthoc_pval[sign_posthoc_pval$Gene %in% IL24_CT
 IL24_CTRL24_Sign_df$cluster<-"bulk"
 
 #httr::set_config(config(ssl_verifypeer=0)) # for whatever reason you get an curl SSL error about self-signed certs if you don't set this
-#Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
+Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
 IL24_CTRL24_toppgene<-toppFun(IL24_CTRL24_Sign_df, gene_col="Gene", p_val_col="p_val", logFC_col="logFC", cluster_col="cluster")
 IL24_CTRL24_toppgene$Cluster<-'bulk'
 
@@ -1754,7 +1761,9 @@ dev.off()
 #################
 
 
-
+dir.create("./outs/dge/IL24_ILelig24")
+dir.create("./outs/dge/IL48_ILelig48")
+dir.create("./outs/dge/IL72_ILelig72")
 
 
 
@@ -2250,7 +2259,7 @@ IL24_elig24_Sign_df$p_val<-sign_posthoc_pval[sign_posthoc_pval$Gene %in% IL24_el
 IL24_elig24_Sign_df$cluster<-"bulk"
 
 #httr::set_config(config(ssl_verifypeer=0)) # for whatever reason you get an curl SSL error about self-signed certs if you don't set this
-#Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
+Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
 IL24_elig24_toppgene<-toppFun(IL24_elig24_Sign_df, gene_col="Gene", p_val_col="p_val", logFC_col="logFC", cluster_col="cluster")
 IL24_elig24_toppgene$Cluster<-'bulk'
 
@@ -2553,7 +2562,19 @@ dev.off()
 
 
 ##### GENES OF INTEREST ###############
-  
+
+
+dir.create("./outs/dge/IL24_CTRL24/GOI")
+dir.create("./outs/dge/IL48_CTRL48/GOI")
+dir.create("./outs/dge/IL72_CTRL72/GOI")
+dir.create("./outs/dge/ILelig24_CTRL24/GOI")
+dir.create("./outs/dge/ILelig48_CTRL48/GOI")
+dir.create("./outs/dge/ILelig72_CTRL72/GOI")
+dir.create("./outs/dge/IL24_ILelig24/GOI")
+dir.create("./outs/dge/IL48_ILelig48/GOI")
+dir.create("./outs/dge/IL72_ILelig72/GOI")
+
+
 
 
 #GOI <- read_xlsx("./outs/counts/Genes_of_Interest.xlsx")
@@ -3287,25 +3308,28 @@ IL24_elig24_Sign_df_GOI$cluster<-"bulk"
 #httr::set_config(config(ssl_verifypeer=0)) # for whatever reason you get an curl SSL error about self-signed certs if you don't set this
 #Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
 IL24_elig24_GOI_toppgene<-toppFun(IL24_elig24_Sign_df_GOI, gene_col="Gene", p_val_col="p_val", logFC_col="logFC", cluster_col="cluster")
-IL24_elig24_GOI_toppgene$Cluster<-'bulk'
 
-save(IL24_elig24_GOI_toppgene, file="./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_toppgene_queries.RData")
+# NO RESULTS --^
 
-pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_molecular_function_gene_ont.pdf",width=8,height=8)
-toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
-dev.off()
+# IL24_elig24_GOI_toppgene$Cluster<-'bulk'
 
-pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_biological_process_gene_ont.pdf",width=8,height=8)
-toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
-dev.off()
+# save(IL24_elig24_GOI_toppgene, file="./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_toppgene_queries.RData")
 
-pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_cellular_component_gene_ont.pdf",width=8,height=8)
-toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_molecular_function_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
+# dev.off()
 
-pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_pathway_gene_ont.pdf",width=16,height=8)
-toppPlot(IL24_elig24_GOI_toppgene, category="Pathway", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_biological_process_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_cellular_component_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL24_elig24_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL24_ILelig24/GOI/GOI_IL24_ILelig24_pathway_gene_ont.pdf",width=16,height=8)
+# toppPlot(IL24_elig24_GOI_toppgene, category="Pathway", clusters=c("bulk"))
+# dev.off()
 
 # 
 IL48_elig48_Sign_df_GOI$p_val<-posthoc_pval[rownames_to_column(posthoc_pval, "Gene")$Gene %in% IL48_elig48_Sign_df_GOI$Gene, ]$il1b_time48_il1b_elig_time48
@@ -3314,25 +3338,28 @@ IL48_elig48_Sign_df_GOI$cluster<-"bulk"
 #httr::set_config(config(ssl_verifypeer=0)) # for whatever reason you get an curl SSL error about self-signed certs if you don't set this
 #Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
 IL48_elig48_GOI_toppgene<-toppFun(IL48_elig48_Sign_df_GOI, gene_col="Gene", p_val_col="p_val", logFC_col="logFC", cluster_col="cluster")
-IL48_elig48_GOI_toppgene$Cluster<-'bulk'
 
-save(IL48_elig48_GOI_toppgene, file="./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_toppgene_queries.RData")
+# NO RESULTS --^
 
-pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_molecular_function_gene_ont.pdf",width=8,height=8)
-toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
-dev.off()
+# IL48_elig48_GOI_toppgene$Cluster<-'bulk'
 
-pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_biological_process_gene_ont.pdf",width=8,height=8)
-toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
-dev.off()
+# save(IL48_elig48_GOI_toppgene, file="./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_toppgene_queries.RData")
 
-pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_cellular_component_gene_ont.pdf",width=8,height=8)
-toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_molecular_function_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
+# dev.off()
 
-pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_pathway_gene_ont.pdf",width=16,height=8)
-toppPlot(IL48_elig48_GOI_toppgene, category="Pathway", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_biological_process_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_cellular_component_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL48_elig48_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL48_ILelig48/GOI/GOI_IL48_ILelig48_pathway_gene_ont.pdf",width=16,height=8)
+# toppPlot(IL48_elig48_GOI_toppgene, category="Pathway", clusters=c("bulk"))
+# dev.off()
 
 # 
 IL72_elig72_Sign_df_GOI$p_val<-posthoc_pval[rownames_to_column(posthoc_pval, "Gene")$Gene %in% IL72_elig72_Sign_df_GOI$Gene, ]$il1b_time72_il1b_elig_time72
@@ -3341,31 +3368,42 @@ IL72_elig72_Sign_df_GOI$cluster<-"bulk"
 #httr::set_config(config(ssl_verifypeer=0)) # for whatever reason you get an curl SSL error about self-signed certs if you don't set this
 #Sys.setenv(CURL_CA_BUNDLE="/private/etc/ssl/cacert.pem")
 IL72_elig72_GOI_toppgene<-toppFun(IL72_elig72_Sign_df_GOI, gene_col="Gene", p_val_col="p_val", logFC_col="logFC", cluster_col="cluster")
-IL72_elig72_GOI_toppgene$Cluster<-'bulk'
 
-save(IL72_elig72_GOI_toppgene, file="./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_toppgene_queries.RData")
+# NO RESULTS --^
 
-pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_molecular_function_gene_ont.pdf",width=8,height=8)
-toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
-dev.off()
+# IL72_elig72_GOI_toppgene$Cluster<-'bulk'
 
-pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_biological_process_gene_ont.pdf",width=8,height=8)
-toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
-dev.off()
+# save(IL72_elig72_GOI_toppgene, file="./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_toppgene_queries.RData")
 
-pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_cellular_component_gene_ont.pdf",width=8,height=8)
-toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_molecular_function_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyMolecularFunction", clusters=c("bulk"))
+# dev.off()
 
-pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_pathway_gene_ont.pdf",width=16,height=8)
-toppPlot(IL72_elig72_GOI_toppgene, category="Pathway", clusters=c("bulk"))
-dev.off()
+# pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_biological_process_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyBiologicalProcess", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_cellular_component_gene_ont.pdf",width=8,height=8)
+# toppPlot(IL72_elig72_GOI_toppgene, category="GeneOntologyCellularComponent", clusters=c("bulk"))
+# dev.off()
+
+# pdf("./outs/dge/IL72_ILelig72/GOI/GOI_IL72_ILelig72_pathway_gene_ont.pdf",width=16,height=8)
+# toppPlot(IL72_elig72_GOI_toppgene, category="Pathway", clusters=c("bulk"))
+# dev.off()
 
 
 
 ##### GENES OF INTEREST 2 ###############
   
-
+dir.create("./outs/dge/IL24_CTRL24/GOI_2")
+dir.create("./outs/dge/IL48_CTRL48/GOI_2")
+dir.create("./outs/dge/IL72_CTRL72/GOI_2")
+dir.create("./outs/dge/ILelig24_CTRL24/GOI_2")
+dir.create("./outs/dge/ILelig48_CTRL48/GOI_2")
+dir.create("./outs/dge/ILelig72_CTRL72/GOI_2")
+dir.create("./outs/dge/IL24_ILelig24/GOI_2")
+dir.create("./outs/dge/IL48_ILelig48/GOI_2")
+dir.create("./outs/dge/IL72_ILelig72/GOI_2")
 
 #GOI <- read_xlsx("./outs/counts/Genes_of_Interest.xlsx")
 #GOI <- unique(append(GOI$Gene, c("ERN1", "XBP1", "HSPA13")))
@@ -4011,6 +4049,671 @@ vol %>%
                         color = "#000000", min.segment.length = 0, background = TRUE)  %>%
   adjust_x_axis_title("$Log[2]~fold~change$")  %>%
   adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$") +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+
+
+##### GENES OF INTEREST 3 ###############
+  
+dir.create("./outs/dge/IL24_CTRL24/GOI_3")
+dir.create("./outs/dge/IL48_CTRL48/GOI_3")
+dir.create("./outs/dge/IL72_CTRL72/GOI_3")
+dir.create("./outs/dge/ILelig24_CTRL24/GOI_3")
+dir.create("./outs/dge/ILelig48_CTRL48/GOI_3")
+dir.create("./outs/dge/ILelig72_CTRL72/GOI_3")
+dir.create("./outs/dge/IL24_ILelig24/GOI_3")
+dir.create("./outs/dge/IL48_ILelig48/GOI_3")
+dir.create("./outs/dge/IL72_ILelig72/GOI_3")
+
+
+GOI_3<-c("CXCL8", "SOD2", "ERN1", "HSPA13", "CANX", "DNAJC3", "NFE2L1", "CXCL5", "CXCL8",
+         "CXCL5", "CXCL6", "CXCL1", "CCL2", "C3", "IL6", "SOD2", "CANX", "DNAJC3", "ERN1",
+         "HSPA13")
+
+GOI_3 <- unique(GOI_3)
+
+### box plots ###
+
+# IL24
+IL24_CTRL24_Sign_df_GOI_3 <- IL24_CTRL24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL24_CTRL24_Sign_df_GOI_top_labelled_3 <- IL24_CTRL24_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+# IL48
+IL48_CTRL48_Sign_df_GOI_3 <- IL48_CTRL48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL48_CTRL48_Sign_df_GOI_top_labelled_3 <- IL48_CTRL48_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+# IL72
+IL72_CTRL72_Sign_df_GOI_3 <- IL72_CTRL72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL72_CTRL72_Sign_df_GOI_top_labelled_3 <- IL72_CTRL72_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+# ILelig24
+ILelig24_CTRL24_Sign_df_GOI_3 <- ILelig24_CTRL24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+ILelig24_CTRL24_Sign_df_GOI_top_labelled_3 <- ILelig24_CTRL24_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+# ILelig48
+ILelig48_CTRL48_Sign_df_GOI_3 <- ILelig48_CTRL48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+ILelig48_CTRL48_Sign_df_GOI_top_labelled_3 <- ILelig48_CTRL48_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+# ILelig72
+ILelig72_CTRL72_Sign_df_GOI_3 <- ILelig72_CTRL72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+ILelig72_CTRL72_Sign_df_GOI_top_labelled_3 <- ILelig72_CTRL72_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+#
+IL24_elig24_Sign_df_GOI_3 <- IL24_elig24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL24_elig24_Sign_df_GOI_top_labelled_3 <- IL24_elig24_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+#
+IL48_elig48_Sign_df_GOI_3 <- IL48_elig48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL48_elig48_Sign_df_GOI_top_labelled_3 <- IL48_elig48_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+#
+IL72_elig72_Sign_df_GOI_3 <- IL72_elig72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  dplyr::filter(Gene %in% GOI_3)
+
+
+IL72_elig72_Sign_df_GOI_top_labelled_3 <- IL72_elig72_Sign_df_GOI_3 %>%
+  group_by(Direction) %>%
+  #na.omit() %>%
+  arrange(FDR) #%>%
+  #top_n(n = 10, wt = LOG)
+
+
+
+### volc plots ###
+
+# EnhancedVolcano(
+#     vol, 
+#     lab=vol$Gene,
+#     x="logFC", 
+#     y="FDR", 
+#     selectLab=c("ATF5","C3","CANX","CCL2","CEBPD","CXCL8","DNAJB11","DNAJC10","DNAJC3","ERLIN1","ERN1","GSN",
+#                 "HSPA13","IL6","INF2","MAP2K3","MGST1","NFE2L1","NFKB2","OSBPL10","P4HA2","PDIA4","PTPN12",
+#                 "RCN1","RPN1","SLC39A14","SOD2","TMX1","TNIP1","VAPA","XBP1"), 
+#     pCutoff = 0.05,
+#     FCcutoff = 0.3,
+#     pointSize = 1.0,
+#     labSize = 4.0,
+#     colAlpha = 1,
+#     col=c('darkgrey','darkgrey','darkgrey', "#BF40BF"),
+#     legendPosition = "None",
+#     drawConnectors = TRUE,
+#     widthConnectors = 0.75)
+
+# IL24
+vol <- IL24_CTRL24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL24_CTRL24_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL24_CTRL24/GOI_3/GOI_IL24_CTRL24_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL24_CTRL24_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3,  force=20,#size = 2.5, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+ #unit(0.2,"lines")
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL24_CTRL24/GOI_3/GOI_IL24_CTRL24_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL24_CTRL24_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+# IL48
+vol <- IL48_CTRL48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL48_CTRL48_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL48_CTRL48/GOI_3/GOI_IL48_CTRL48_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL48_CTRL48_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL48_CTRL48/GOI_3/GOI_IL48_CTRL48_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL48_CTRL48_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$", fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$", fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+# IL72
+vol <- IL72_CTRL72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL72_CTRL72_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL72_CTRL72/GOI_3/GOI_IL72_CTRL72_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL72_CTRL72_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL72_CTRL72/GOI_3/GOI_IL72_CTRL72_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL72_CTRL72_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+# ILelig24
+vol <- ILelig24_CTRL24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% ILelig24_CTRL24_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/ILelig24_CTRL24/GOI_3/GOI_ILelig24_CTRL24_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = ILelig24_CTRL24_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/ILelig24_CTRL24/GOI_3/GOI_ILelig24_CTRL24_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = ILelig24_CTRL24_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+
+
+# ILelig48
+vol <- ILelig48_CTRL48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% ILelig48_CTRL48_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/ILelig48_CTRL48/GOI_3/GOI_ILelig48_CTRL48_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = ILelig48_CTRL48_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/ILelig48_CTRL48/GOI_3/GOI_ILelig48_CTRL48_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = ILelig48_CTRL48_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+# ILelig72
+vol <- ILelig72_CTRL72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% ILelig72_CTRL72_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/ILelig72_CTRL72/GOI_3/GOI_ILelig72_CTRL72_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = ILelig72_CTRL72_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/ILelig72_CTRL72/GOI_3/GOI_ILelig72_CTRL72_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = ILelig72_CTRL72_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+# 
+vol <- IL24_elig24 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL24_elig24_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL24_ILelig24/GOI_3/GOI_IL24_ILelig24_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL24_elig24_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL24_ILelig24/GOI_3/GOI_IL24_ILelig24_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL24_elig24_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+# 
+vol <- IL48_elig48 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL48_elig48_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL48_ILelig48/GOI_3/GOI_IL48_ILelig48_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL48_elig48_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL48_ILelig48/GOI_3/GOI_IL48_ILelig48_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL48_elig48_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
+      theme(legend.position="none")+
+      ylim(0,16) + xlim(-10,+10)
+dev.off()
+
+
+#
+vol <- IL72_elig72 %>%
+  mutate(LOG = -log10(FDR), ABS = abs(logFC)) %>%
+  mutate(Threshold = if_else(FDR < 0.05 & ABS > 0.3, "TRUE","FALSE")) %>%
+  mutate(Direction = case_when(logFC > 0.3 & FDR < 0.05 ~ "UpReg",
+                               logFC < -0.3 & FDR < 0.05 ~ "DownReg")) %>%
+  mutate(candidate = abs(logFC) > 0.3 & FDR < 0.05) %>%
+  mutate(coolgenes = Gene %in% IL72_elig72_Sign_df_GOI_top_labelled_3$Gene)
+  #dplyr::filter(Gene %in% GOI)
+
+pdf("./outs/dge/IL72_ILelig72/GOI_3/GOI_IL72_ILelig72_04_Volcano_Plot_3.pdf",width=6,height=6,useDingbats=FALSE)
+
+ggscatter(vol,
+          x = "logFC",
+          y = "LOG",
+          color = "Direction",#color = "Threshold",
+          palette=c("#FFA500", "#BF40BF"),
+          size = 2,max.overlaps = Inf,
+          alpha=0.3,
+          shape=19)+
+  xlab("log2(Fold Change)")+
+  ylab("-log10(FDR)")+
+  geom_vline(xintercept = 0, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = 0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_vline(xintercept = -0.3, colour = "black",linetype="dotted",size=1,alpha=0.5) +
+  geom_hline(yintercept = 1.3, colour = "grey",linetype="dotted",size=1,alpha=0.5) +
+  geom_text_repel(data = IL72_elig72_Sign_df_GOI_top_labelled_3,
+                  mapping = aes(label = Gene),
+                  size = 3, force=20,
+                  box.padding = unit(0.4, "lines"),
+                  point.padding = unit(0.4, "lines"))+
+  theme(legend.position="none")+
+  ylim(0,16.0) + xlim(-10.0,+10.0)
+dev.off()
+
+pdf("./outs/dge/IL72_ILelig72/GOI_3/GOI_IL72_ILelig72_04_Volcano_Plot_3_3.pdf",width=6,height=6,useDingbats=FALSE)
+vol %>%
+     as.data.frame() %>%
+     tidyplot(x = logFC, y = LOG)  %>%
+  add_data_points(data = filter_rows(!candidate),color = "lightgrey", rasterize = TRUE, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "UpReg"),color = "#BF40BF", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(candidate, Direction == "DownReg"),color = "#FFA500", alpha = 0.5, size=0.2)  %>%
+  add_data_points(data = filter_rows(coolgenes),color = "purple4", alpha = 1, size=1)  %>%
+  add_reference_lines(x = c(-0.3, 0.3), y = -log10(0.05))  %>%
+  add_data_labels_repel(data = IL72_elig72_Sign_df_GOI_top_labelled_3, label = Gene,
+                        color = "#000000", min.segment.length = 0, background = TRUE)  %>%
+  adjust_x_axis_title("$Log[2]~fold~change$",fontsize=10)  %>%
+  adjust_y_axis_title("$-Log[10]~italic(P)~adjusted$",fontsize=10) +
       theme(legend.position="none")+
       ylim(0,16) + xlim(-10,+10)
 dev.off()
