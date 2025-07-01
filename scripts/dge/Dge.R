@@ -28,7 +28,7 @@ library(scToppR)
 library(fgsea)
 })
 
-#setwd("~/biocm/projects/bulks/nowling_4-25/")
+setwd("~/biocm/projects/bulks/nowling_4-25/")
 
 source("./scripts/dge/utils/Utils.R")
 
