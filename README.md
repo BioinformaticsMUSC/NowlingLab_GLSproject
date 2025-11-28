@@ -5,6 +5,6 @@ This repository contains analysis code for the bulk RNA-seq project carried out 
 
 ## Cite this
 
-If you use anything in this repository please cite the following publication:
+If you use anything in this repository please cite the following publication:  "Cytokine-driven glycosphingolipid metabolism modulates endoplasmic reticulum calcium homeostasis in primary human renal mesangial cells", Mariia Stefanenko, Tessa M. Ortiz, Sandra G. Mungaray, Mykhailo Fedoriuk, Oleg Palygin, Tamara K. Nowling, Stefano Berto, Drew Moore
 
-Paper URL: 
+Paper URL: https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2025.1688916/abstract
